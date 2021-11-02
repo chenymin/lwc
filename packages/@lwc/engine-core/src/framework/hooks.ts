@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import {
     ArrayFilter,
     ArrayJoin,
@@ -50,16 +51,12 @@ function setScopeTokenClassIfNecessary(elm: Element, owner: VM) {
     const { cmpTemplate, context } = owner;
     const token = cmpTemplate?.stylesheetToken;
     if (!isUndefined(token) && context.hasScopedStyles) {
-        owner.renderer.getClassList(elm).add(token);
+        renderer.getClassList(elm).add(token);
     }
 }
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
-    const {
-        elm,
-        text,
-        owner: { renderer },
-    } = vnode;
+    const { elm, text } = vnode;
 
     if (oldVnode.text !== text) {
         if (process.env.NODE_ENV !== 'production') {
@@ -73,8 +70,6 @@ export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
 }
 
 export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
-    const { renderer } = vnode.owner;
-
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
@@ -85,8 +80,6 @@ export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: No
 }
 
 export function removeNodeHook(vnode: VNode, parentNode: Node) {
-    const { renderer } = vnode.owner;
-
     if (process.env.NODE_ENV !== 'production') {
         unlockDomMutation();
     }
@@ -228,7 +221,6 @@ export function createViewModelHook(elm: HTMLElement, vnode: VCustomElement) {
         mode,
         owner,
         tagName: sel,
-        renderer: owner.renderer,
     });
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
@@ -270,7 +262,6 @@ function isElementNode(node: ChildNode): node is Element {
 function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolean {
     const {
         data: { attrs = {} },
-        owner: { renderer },
     } = vnode;
 
     let nodesAreCompatible = true;
@@ -294,7 +285,6 @@ function vnodesAndElementHaveCompatibleAttrs(vnode: VNode, elm: Element): boolea
 function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolean {
     const {
         data: { className, classMap },
-        owner: { renderer },
     } = vnode;
 
     let nodesAreCompatible = true;
@@ -339,7 +329,6 @@ function vnodesAndElementHaveCompatibleClass(vnode: VNode, elm: Element): boolea
 function vnodesAndElementHaveCompatibleStyle(vnode: VNode, elm: Element): boolean {
     const {
         data: { style, styleDecls },
-        owner: { renderer },
     } = vnode;
     const elmStyle = renderer.getAttribute(elm, 'style') || '';
     let vnodeStyle;

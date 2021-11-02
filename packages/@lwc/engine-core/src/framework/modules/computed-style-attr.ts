@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import { isString } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
@@ -12,17 +13,15 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
     const {
         elm,
         data: { style: newStyle },
-        owner: { renderer },
     } = vnode;
-    const { setAttribute, removeAttribute } = renderer;
     if (oldVnode.data.style === newStyle) {
         return;
     }
 
     if (!isString(newStyle) || newStyle === '') {
-        removeAttribute(elm, 'style');
+        renderer.removeAttribute(elm, 'style');
     } else {
-        setAttribute(elm, 'style', newStyle);
+        renderer.setAttribute(elm, 'style', newStyle);
     }
 }
 

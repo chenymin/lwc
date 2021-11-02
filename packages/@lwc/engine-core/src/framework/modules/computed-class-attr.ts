@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import { create, freeze, isString, isUndefined, StringCharCodeAt, StringSlice } from '@lwc/shared';
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import { VElement } from '../../3rdparty/snabbdom/types';
@@ -50,7 +51,6 @@ function updateClassAttribute(oldVnode: VElement, vnode: VElement) {
     const {
         elm,
         data: { className: newClass },
-        owner: { renderer },
     } = vnode;
     const {
         data: { className: oldClass },

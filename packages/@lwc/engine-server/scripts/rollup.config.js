@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+const replace = require('@rollup/plugin-replace');
 const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
@@ -29,6 +29,14 @@ module.exports = {
     }),
 
     plugins: [
+        replace({
+            preventAssignment: true,
+            delimiters: ['', ''],
+            values: {
+                'from "@lwc/engine-impl"': `from "@lwc/engine-server/src/renderer.ts"`,
+                "from '@lwc/engine-impl'": `from "@lwc/engine-server/src/renderer.ts"`,
+            },
+        }),
         nodeResolve({
             resolveOnly: [/^@lwc\//],
         }),

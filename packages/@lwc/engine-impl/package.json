@@ -1,0 +1,25 @@
+{
+    "name": "@lwc/engine-impl",
+    "version": "2.5.8",
+    "description": "Abstract implementation of an LWC renderer",
+    "homepage": "https://lwc.dev/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salesforce/lwc.git",
+        "directory": "packages/@lwc/engine-impl"
+    },
+    "bugs": {
+        "url": "https://github.com/salesforce/lwc/issues"
+    },
+    "main": "index.cjs",
+    "module": "index.mjs",
+    "typings": "index.d.ts",
+    "license": "MIT",
+    "scripts": {},
+    "files": [
+        "index.*"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}

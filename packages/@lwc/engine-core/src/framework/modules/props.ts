@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import { assert, isUndefined, keys } from '@lwc/shared';
 import { VElement } from '../../3rdparty/snabbdom/types';
 
@@ -32,11 +33,7 @@ function update(oldVnode: VElement, vnode: VElement) {
     }
 
     const isFirstPatch = isUndefined(oldProps);
-    const {
-        elm,
-        sel,
-        owner: { renderer },
-    } = vnode;
+    const { elm, sel } = vnode;
 
     for (const key in props) {
         const cur = props[key];

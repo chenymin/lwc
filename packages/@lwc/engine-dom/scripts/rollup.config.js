@@ -10,6 +10,7 @@
 const path = require('path');
 
 const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
 const typescriptPlugin = require('@rollup/plugin-typescript');
 const writeDistAndTypes = require('../../../../scripts/rollup/writeDistAndTypes');
 const { version } = require('../package.json');
@@ -31,6 +32,14 @@ module.exports = {
     }),
 
     plugins: [
+        replace({
+            preventAssignment: true,
+            delimiters: ['', ''],
+            values: {
+                'from "@lwc/engine-impl"': `from "@lwc/engine-dom/src/renderer.ts"`,
+                "from '@lwc/engine-impl'": `from "@lwc/engine-dom/src/renderer.ts"`,
+            },
+        }),
         nodeResolve({
             resolveOnly: [/^@lwc\//],
         }),

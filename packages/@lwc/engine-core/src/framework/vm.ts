@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import features from '@lwc/features';
 import {
     ArrayPush,
@@ -38,7 +39,7 @@ import { hasDynamicChildren, hydrateChildrenHook } from './hooks';
 import { ReactiveObserver } from './mutation-tracker';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { AccessorReactiveObserver } from './decorators/api';
-import { Renderer, HostNode, HostElement } from './renderer';
+import { HostNode, HostElement } from './renderer';
 import { removeActiveVM } from './hot-swaps';
 
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
@@ -108,7 +109,6 @@ export interface VM<N = HostNode, E = HostElement> {
     /** The owner VM or null for root elements. */
     readonly owner: VM<N, E> | null;
     /** Rendering operations associated with the VM */
-    readonly renderer: Renderer<N, E>;
     renderMode: RenderMode;
     shadowMode: ShadowMode;
     /** The component creation index. */
@@ -273,10 +273,9 @@ export function createVM<HostNode, HostElement>(
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
-        renderer: Renderer;
     }
 ): VM {
-    const { mode, owner, renderer, tagName } = options;
+    const { mode, owner, tagName } = options;
 
     const vm: VM = {
         elm,
@@ -288,7 +287,6 @@ export function createVM<HostNode, HostElement>(
         tagName,
         mode,
         owner,
-        renderer,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
@@ -345,16 +343,15 @@ export function createVM<HostNode, HostElement>(
 }
 
 function computeShadowMode(vm: VM) {
-    const { def, renderer } = vm;
-    const { isNativeShadowDefined, isSyntheticShadowDefined } = renderer;
+    const { def } = vm;
 
     let shadowMode;
-    if (isSyntheticShadowDefined) {
+    if (renderer.isSyntheticShadowDefined) {
         if (def.renderMode === RenderMode.Light) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
             shadowMode = ShadowMode.Native;
-        } else if (isNativeShadowDefined) {
+        } else if (renderer.isNativeShadowDefined) {
             if (def.shadowSupportMode === ShadowSupportMode.Any) {
                 shadowMode = ShadowMode.Native;
             } else {
@@ -479,7 +476,6 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
 
 function runRenderedCallback(vm: VM) {
     const {
-        renderer,
         def: { renderedCallback },
     } = vm;
 
@@ -655,7 +651,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
 export function resetComponentRoot(vm: VM) {
-    const { children, renderer } = vm;
+    const { children } = vm;
     const rootNode = getRenderRoot(vm);
 
     for (let i = 0, len = children.length; i < len; i++) {
@@ -672,7 +668,7 @@ export function resetComponentRoot(vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    if (isTrue(vm.renderer.ssr) || isTrue(vm.isScheduled)) {
+    if (isTrue(renderer.ssr) || isTrue(vm.isScheduled)) {
         return;
     }
 

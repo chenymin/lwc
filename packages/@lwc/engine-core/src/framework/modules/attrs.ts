@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { EmptyObject } from '../utils';
@@ -16,7 +17,6 @@ const ColonCharCode = 58;
 function updateAttrs(oldVnode: VElement, vnode: VElement) {
     const {
         data: { attrs },
-        owner: { renderer },
     } = vnode;
 
     if (isUndefined(attrs)) {
@@ -37,7 +37,6 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
     }
 
     const elm = vnode.elm!;
-    const { setAttribute, removeAttribute } = renderer;
 
     let key: string;
     oldAttrs = isUndefined(oldAttrs) ? EmptyObject : oldAttrs;
@@ -52,14 +51,14 @@ function updateAttrs(oldVnode: VElement, vnode: VElement) {
             unlockAttribute(elm, key);
             if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace
-                setAttribute(elm, key, cur as string, xmlNS);
+                renderer.setAttribute(elm, key, cur as string, xmlNS);
             } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
                 // Assume xlink namespace
-                setAttribute(elm, key, cur as string, xlinkNS);
+                renderer.setAttribute(elm, key, cur as string, xlinkNS);
             } else if (isNull(cur)) {
-                removeAttribute(elm, key);
+                renderer.removeAttribute(elm, key);
             } else {
-                setAttribute(elm, key, cur as string);
+                renderer.setAttribute(elm, key, cur as string);
             }
             lockAttribute(elm, key);
         }

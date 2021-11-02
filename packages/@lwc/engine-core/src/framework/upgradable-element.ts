@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as renderer from '@lwc/engine-impl';
 import { isUndefined, isFunction } from '@lwc/shared';
-import { Renderer } from './renderer';
 
 type UpgradeCallback = (elm: HTMLElement) => void;
 
@@ -14,8 +14,7 @@ interface UpgradableCustomElementConstructor extends CustomElementConstructor {
 }
 
 export function getUpgradableConstructor(
-    tagName: string,
-    renderer: Renderer
+    tagName: string
 ): CustomElementConstructor | UpgradableCustomElementConstructor {
     // Should never get a tag with upper case letter at this point, the compiler should
     // produce only tags with lowercase letters
